@@ -10,17 +10,17 @@
     <!-- 卡片区 -->
     <el-card>
       <!-- 筛选区域 -->
-      <el-tabs v-model="activeName" type="card" @tab-click="handleClick">
+      <el-tabs v-model="queryInfo.GroupName" type="card" @tab-click="handleClick">
         <el-tab-pane label="All" name="All"></el-tab-pane>
-        <el-tab-pane label="OSS" name="OSS"></el-tab-pane>
-        <el-tab-pane label="RDS" name="RDS"></el-tab-pane>
-        <el-tab-pane label="MaxCompute" name="MaxCompute"></el-tab-pane>
-        <el-tab-pane label="自建数据库" name="自建数据库"></el-tab-pane>
+        <el-tab-pane label="APP" name="APP"></el-tab-pane>
+        <el-tab-pane label="DAP" name="DAP"></el-tab-pane>
+        <el-tab-pane label="FMC" name="FMC"></el-tab-pane>
+        <el-tab-pane label="ISDP" name="ISDP"></el-tab-pane>
       </el-tabs>
       <!-- 搜索区域 -->
       <el-row :gutter="15">
         <el-col :span="4">
-          <el-select v-model="queryInfo.GroupName" clearable placeholder="请选择">
+          <el-select v-model="queryInfo.InstanceType" clearable placeholder="筛选实例类型" @change="handleClick">
             <el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value"/>
           </el-select>
         </el-col>
@@ -28,7 +28,8 @@
           <el-input placeholder="请输入想查询的实例名" v-model="queryInfo.InstanceName" clearable @clear="getInventorylist" @keyup.enter.native="getInventorylist" />
         </el-col>
         <el-col :span="4">
-          <el-button icon="el-icon-search" @click="getInventorylist" type="primary"></el-button>
+          <el-button @click="getInventorylist" type="primary">搜 索</el-button>
+          <el-button @click="clearAll">重 置</el-button>
         </el-col>
       </el-row>
       <!-- 数据返回区域 -->
@@ -84,7 +85,11 @@
                 <el-popover placement="left" width="200" trigger="hover" content="数据资产实例的风险等级名称">
                   <label slot="reference">风险等级</label>
                 </el-popover>
-                <span>{{ props.row.RiskLevelName }}</span>
+                <el-tag v-if="props.row.RiskLevelName === 'S4'" type="danger">S4</el-tag>
+                <el-tag v-else-if="props.row.RiskLevelName === 'S3'" type="warning">S3</el-tag>
+                <el-tag v-else-if="props.row.RiskLevelName === 'S2'">S2</el-tag>
+                <el-tag v-else-if="props.row.RiskLevelName === 'S1'" type="success">S1</el-tag>
+                <el-tag v-else type="info">N/A</el-tag>
               </el-form-item>
               <!-- 是否包含敏感数据 -->
               <el-form-item>
@@ -110,19 +115,27 @@
             </el-form>
           </template>
         </el-table-column>
-        <el-table-column label="项目组" prop="GroupName" sortable/>
+        <el-table-column label="项目组" prop="GroupName" width="100px" sortable/>
         <el-table-column label="名称" prop="Name" sortable/>
         <el-table-column label="类型" prop="ProductCode" sortable/>
         <el-table-column label="数据表总数" prop="TotalCount" sortable/>
-        <el-table-column label="风险等级" prop="RiskLevelName" sortable/>
+        <el-table-column label="风险等级" prop="RiskLevelName" sortable>
+          <template slot-scope="scope">
+            <el-tag v-if="scope.row.RiskLevelName === 'S4'" type="danger">S4</el-tag>
+            <el-tag v-else-if="scope.row.RiskLevelName === 'S3'" type="warning">S3</el-tag>
+            <el-tag v-else-if="scope.row.RiskLevelName === 'S2'">S2</el-tag>
+            <el-tag v-else-if="scope.row.RiskLevelName === 'S1'" type="success">S1</el-tag>
+            <el-tag v-else type="info">N/A</el-tag>
+          </template>
+        </el-table-column>
       </el-table>
       <!-- 分页区域 -->
       <el-pagination
         @size-change="handleSizeChange"
         @current-change="handleCurrentChange"
-        :current-page="queryInfo.pagenum"
+        :current-page="queryInfo.PageNum"
         :page-sizes="[5, 10, 20, 50]"
-        :page-size="queryInfo.pagesize"
+        :page-size="queryInfo.PageSize"
         layout="total, sizes, prev, pager, next, jumper"
         :total=total>
       </el-pagination>
@@ -134,11 +147,10 @@
 export default {
   data () {
     return {
-      activeName: 'All',
       input: '',
       // 获取数据资产列表
       queryInfo: {
-        GroupName: '',
+        GroupName: 'All',
         InstanceName: '',
         InstanceType: '',
         InstanceGroup: '',
@@ -168,6 +180,12 @@ export default {
         TenantName: '',
         TotalCount: 0
       },
+      options: [
+        { value: '', label: 'All' },
+        { value: 'OSS', label: 'OSS' },
+        { value: 'RDS', label: 'RDS' },
+        { value: 'MaxCompute', label: 'MaxCompute' }
+      ],
       inventorylist: [],
       total: 0
     }
@@ -193,7 +211,12 @@ export default {
       this.getInventorylist()
     },
     handleClick () {
-      if (this.activeName === 'All') { this.queryInfo.InstanceType = '' } else { this.queryInfo.InstanceType = this.activeName }
+      this.getInventorylist()
+    },
+    clearAll () {
+      this.queryInfo.GroupName = 'All'
+      this.queryInfo.InstanceName = ''
+      this.queryInfo.InstanceType = 'All'
       this.getInventorylist()
     }
   },

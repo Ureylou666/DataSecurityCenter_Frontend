@@ -33,7 +33,9 @@ import {
   Option,
   Tabs,
   TabPane,
-  Cascader
+  Cascader,
+  Link,
+  Tag
 } from 'element-ui'
 
 Vue.config.productionTip = false
@@ -70,4 +72,6 @@ Vue.use(Option)
 Vue.use(Tabs)
 Vue.use(TabPane)
 Vue.use(Cascader)
+Vue.use(Link)
+Vue.use(Tag)
 Vue.prototype.$message = Message

@@ -4,6 +4,7 @@ import AdminView from '../views/AdminView'
 import DscBoard from '@/components/Dashboard/DscBoard'
 import DataInventory from '@/components/Storage/DataInventory'
 import DataDetaillist from '@/components/Storage/DataDetaillist'
+import DataRules from '@/components/Storage/DataRules'
 Vue.use(VueRouter)
 
 const routes = [
@@ -14,7 +15,8 @@ const routes = [
     children: [
       { path: '/welcome', component: DscBoard },
       { path: '/Inventory', component: DataInventory },
-      { path: '/Detaillist', component: DataDetaillist }
+      { path: '/Detaillist', component: DataDetaillist },
+      { path: '/Rules', component: DataRules }
     ]
   }
 ]
