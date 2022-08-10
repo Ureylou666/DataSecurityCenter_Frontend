@@ -33,7 +33,7 @@
         </el-col>
       </el-row>
       <!-- 数据返回区域 -->
-      <el-table :data="inventorylist" :default-sort="{props: 'TotalCount', order: 'descending'}" height="500" stripe style="width: 100%">
+      <el-table :data="inventorylist" :default-sort="{props: 'TotalCount', order: 'descending'}" stripe style="width: 100%">
         <el-table-column type="expand">
           <template slot-scope="props">
             <!-- 折叠区域 -->
