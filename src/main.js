@@ -14,7 +14,7 @@ router.beforeEach((to, from, next) => {
 })
 
 Vue.prototype.$http = axios
-axios.defaults.baseURL = 'http://101.133.139.138:8080/api/v1/'
+axios.defaults.baseURL = 'http://127.0.0.1:8088/api/v1/'
 // axios.interceptors.request.use(config => {
 //  config.headers.Authorization = 'Bearer ' + window.sessionStorage.getItem('token')
 //  return config

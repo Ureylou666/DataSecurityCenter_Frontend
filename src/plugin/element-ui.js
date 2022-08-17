@@ -35,7 +35,11 @@ import {
   TabPane,
   Cascader,
   Link,
-  Tag
+  Tag,
+  Drawer,
+  MenuItemGroup,
+  Divider,
+  Popconfirm
 } from 'element-ui'
 
 Vue.config.productionTip = false
@@ -74,4 +78,8 @@ Vue.use(TabPane)
 Vue.use(Cascader)
 Vue.use(Link)
 Vue.use(Tag)
+Vue.use(Drawer)
+Vue.use(MenuItemGroup)
+Vue.use(Divider)
+Vue.use(Popconfirm)
 Vue.prototype.$message = Message

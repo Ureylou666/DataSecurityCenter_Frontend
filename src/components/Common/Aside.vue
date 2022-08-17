@@ -1,7 +1,6 @@
 <template>
   <el-aside width="200px">
-    <el-menu text-color="#FFF" background-color="#484848" active-text-color="#ffd04b" :unique-opened="true"
-             :collapse="isCollapse" :collapse-transition="false" router :default-active="activePath">
+    <el-menu text-color="#FFF" background-color="#484848" active-text-color="#ffd04b" :unique-opened="true" router>
       <el-menu-item index="welcome"><i class="el-icon-s-home"/>首 页</el-menu-item>
       <el-submenu index="1">
         <template slot="title"><i class="el-icon-s-data"/>数据安全</template>

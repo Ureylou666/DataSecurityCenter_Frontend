@@ -10,7 +10,7 @@
     <!-- 卡片区 -->
     <el-card>
       <!-- 筛选区域 -->
-      <el-tabs v-model="queryInfo.GroupName" type="card" @tab-click="handleClick">
+      <el-tabs v-model="inventoryQueryInfo.GroupName" type="card" @tab-click="handleClick">
         <el-tab-pane label="All" name="All"></el-tab-pane>
         <el-tab-pane label="APP" name="APP"></el-tab-pane>
         <el-tab-pane label="DAP" name="DAP"></el-tab-pane>
@@ -20,12 +20,12 @@
       <!-- 搜索区域 -->
       <el-row :gutter="15">
         <el-col :span="4">
-          <el-select v-model="queryInfo.InstanceType" clearable placeholder="筛选实例类型" @change="handleClick">
+          <el-select v-model="inventoryQueryInfo.InstanceType" clearable placeholder="筛选实例类型" @change="handleClick">
             <el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value"/>
           </el-select>
         </el-col>
         <el-col :span="8">
-          <el-input placeholder="请输入想查询的实例名" v-model="queryInfo.InstanceName" clearable @clear="getInventorylist" @keyup.enter.native="getInventorylist" />
+          <el-input placeholder="请输入想查询的实例名" v-model="inventoryQueryInfo.InstanceName" clearable @clear="getInventorylist" @keyup.enter.native="getInventorylist" />
         </el-col>
         <el-col :span="4">
           <el-button @click="getInventorylist" type="primary">搜 索</el-button>
@@ -128,18 +128,88 @@
             <el-tag v-else type="info">N/A</el-tag>
           </template>
         </el-table-column>
+        <el-table-column label="数据库详情" align="center">
+          <template slot-scope="scope">
+            <el-link v-if="scope.row.ProductCode==='RDS'" icon="el-icon-view" type="primary" @click="handelDrawer(scope.row.Name)">查看</el-link>
+          </template>
+        </el-table-column>
       </el-table>
       <!-- 分页区域 -->
       <el-pagination
         @size-change="handleSizeChange"
         @current-change="handleCurrentChange"
-        :current-page="queryInfo.PageNum"
+        :current-page="inventoryQueryInfo.PageNum"
         :page-sizes="[5, 10, 20, 50]"
-        :page-size="queryInfo.PageSize"
+        :page-size="inventoryQueryInfo.PageSize"
         layout="total, sizes, prev, pager, next, jumper"
         :total=total>
       </el-pagination>
     </el-card>
+    <!-- 抽屉区域 -->
+    <el-drawer :visible.sync="table" :before-close="handleDrawerClose" size="60%" >
+      <!-- 表格 -->
+      <el-table :data="tablelist" :default-sort="{props: 'TotalCount', order: 'descending'}" stripe fit>
+        <el-table-column label="表 名" prop="Name" sortable></el-table-column>
+        <el-table-column label="字段数" prop="TotalCount" sortable></el-table-column>
+        <el-table-column label="风险等级" prop="RiskLevelName" sortable>
+          <template slot-scope="scope">
+            <el-tag v-if="scope.row.RiskLevelName === 'S4'" type="danger">S4</el-tag>
+            <el-tag v-else-if="scope.row.RiskLevelName === 'S3'" type="warning">S3</el-tag>
+            <el-tag v-else-if="scope.row.RiskLevelName === 'S2'">S2</el-tag>
+            <el-tag v-else-if="scope.row.RiskLevelName === 'S1'" type="success">S1</el-tag>
+            <el-tag v-else type="info">N/A</el-tag>
+          </template>
+        </el-table-column>
+        <el-table-column label="列详情">
+          <template slot-scope="scope">
+            <el-link icon="el-icon-view" type="primary"  @click="handelInnerDrawer(scope.row.Name)">查看</el-link>
+          </template>
+        </el-table-column>
+      </el-table>
+      <!-- 分页区域 -->
+      <el-pagination
+        hide-on-single-page = true
+        @size-change="handleTableSizeChange"
+        @current-change="handleTableCurrentChange"
+        :current-page="tableQueryInfo.PageNum"
+        :page-sizes="[5, 10, 20, 50]"
+        :page-size="tableQueryInfo.PageSize"
+        layout="total, sizes, prev, pager, next, jumper"
+        :total=tabletotal>
+      </el-pagination>
+      <el-drawer :visible.sync="column" :before-close="handleInnerDrawerClose"  :append-to-body="true" size="50%">
+        <!-- 表格 -->
+        <el-table :data="columnlist" stripe fit>
+          <el-table-column label="字段名" prop="Name" sortable></el-table-column>
+          <el-table-column label="数据类型" prop="DataType" sortable></el-table-column>
+          <el-table-column label="风险等级" prop="RiskLevelName" sortable>
+            <template slot-scope="scope">
+              <el-tag v-if="scope.row.RiskLevelName === 'S4'" type="danger">S4</el-tag>
+              <el-tag v-else-if="scope.row.RiskLevelName === 'S3'" type="warning">S3</el-tag>
+              <el-tag v-else-if="scope.row.RiskLevelName === 'S2'">S2</el-tag>
+              <el-tag v-else-if="scope.row.RiskLevelName === 'S1'" type="success">S1</el-tag>
+              <el-tag v-else type="info">N/A</el-tag>
+            </template>
+          </el-table-column>
+          <el-table-column label="字段样例">
+            <template>
+              <el-link icon="el-icon-view" type="primary">查看</el-link>
+            </template>
+          </el-table-column>
+        </el-table>
+        <!-- 分页区域 -->
+        <el-pagination
+          hide-on-single-page = true
+          @size-change="handleColumnSizeChange"
+          @current-change="handleColumnCurrentChange"
+          :current-page="columnQueryInfo.PageNum"
+          :page-sizes="[5, 10, 20, 50]"
+          :page-size="columnQueryInfo.PageSize"
+          layout="total, sizes, prev, pager, next, jumper"
+          :total=columntotal>
+        </el-pagination>
+      </el-drawer>
+    </el-drawer>
   </div>
 </template>
 
@@ -147,13 +217,28 @@
 export default {
   data () {
     return {
+      table: false,
+      column: false,
       input: '',
       // 获取数据资产列表
-      queryInfo: {
+      inventoryQueryInfo: {
         GroupName: 'All',
         InstanceName: '',
         InstanceType: '',
         InstanceGroup: '',
+        PageNum: 1,
+        PageSize: 10
+      },
+      // 获取数据资产表列表
+      tableQueryInfo: {
+        InstanceName: '',
+        GroupName: '',
+        PageNum: 1,
+        PageSize: 10
+      },
+      // 获取资产 字段 列表
+      columnQueryInfo: {
+        TableName: '',
         PageNum: 1,
         PageSize: 10
       },
@@ -180,6 +265,49 @@ export default {
         TenantName: '',
         TotalCount: 0
       },
+      // 抽屉 表 数据
+      tableInfo: {
+        UUID: '',
+        GroupName: '',
+        CreationTime: '',
+        Id: 0,
+        InstanceDescription: '',
+        InstanceId: 0,
+        InstanceName: '',
+        Name: '',
+        Owner: '',
+        ProductCode: '',
+        ProductId: '',
+        RiskLevelId: 0,
+        RiskLevelName: '',
+        Sensitive: true,
+        SensitiveCount: 0,
+        SensitiveRatio: '',
+        TenantName: '',
+        TotalCount: 0
+      },
+      // 抽屉 列 数据
+      columnInfo: {
+        UUID: '',
+        GroupName: '',
+        CreationTime: '',
+        DataType: '',
+        Id: 0,
+        InstanceId: '',
+        InstanceName: '',
+        Name: '',
+        ProductCode: '',
+        RevisionId: 0,
+        RevisionStatus: 0,
+        RiskLevelId: 0,
+        RiskLevelName: '',
+        RuleName: '',
+        SensLevelName: '',
+        Sensitive: '',
+        TableId: '',
+        TableName: '',
+        TotalCount: 0
+      },
       options: [
         { value: '', label: 'All' },
         { value: 'OSS', label: 'OSS' },
@@ -187,7 +315,11 @@ export default {
         { value: 'MaxCompute', label: 'MaxCompute' }
       ],
       inventorylist: [],
-      total: 0
+      tablelist: [],
+      columnlist: [],
+      total: 0,
+      tabletotal: 0,
+      columntotal: 0
     }
   },
   created () {
@@ -195,29 +327,82 @@ export default {
   },
   methods: {
     async getInventorylist () {
-      const { data: res } = await this.$http.post('inventory', this.queryInfo,
+      const { data: res } = await this.$http.post('inventory', this.inventoryQueryInfo,
         { headers: { 'Content-Type': 'application/json' } })
       if (res.Code !== 200) return this.$message.error('获取资产列表失败')
       this.inventorylist = res.Res_Data
       this.total = res.Inventory_Total
     },
+    async getTablelist () {
+      const { data: res } = await this.$http.post('tables', this.tableQueryInfo,
+        { headers: { 'Content-Type': 'application/json' } })
+      if (res.Code !== 200) return this.$message.error('获取列表失败')
+      this.tablelist = res.Res_Data
+      this.tabletotal = res.Tables_Total
+    },
+    async getColumnlist () {
+      const { data: res } = await this.$http.post('tables/column', this.columnQueryInfo,
+        { headers: { 'Content-Type': 'application/json' } })
+      if (res.Code !== 200) return this.$message.error('获取列表失败')
+      this.columnlist = res.Res_Data
+      this.columntotal = res.Column_Total
+    },
     // 监听
     handleSizeChange (newSize) {
-      this.queryInfo.pageSize = newSize
+      this.inventoryQueryInfo.pageSize = newSize
       this.getInventorylist()
     },
     handleCurrentChange (newPage) {
-      this.queryInfo.pageNum = newPage
+      this.inventoryQueryInfo.pageNum = newPage
       this.getInventorylist()
+    },
+    handleTableSizeChange (newSize) {
+      this.tableQueryInfo.pageSize = newSize
+      this.getTablelist()
+    },
+    handleTableCurrentChange (newPage) {
+      this.tableQueryInfo.pageNum = newPage
+      this.getTablelist()
+    },
+    handleColumnSizeChange (newSize) {
+      this.columnQueryInfo.pageSize = newSize
+      this.getColumnlist()
+    },
+    handleColumnCurrentChange (newPage) {
+      this.columnQueryInfo.pageNum = newPage
+      this.getColumnlist()
     },
     handleClick () {
       this.getInventorylist()
     },
+    handelDrawer (instanceName) {
+      this.table = true
+      this.tableQueryInfo.InstanceName = instanceName
+      this.getTablelist()
+    },
+    handelInnerDrawer (tableName) {
+      this.column = true
+      const temp = tableName.indexOf('.')
+      this.columnQueryInfo.TableName = tableName.substr(temp + 1, tableName.length - temp - 1)
+      this.getColumnlist()
+    },
     clearAll () {
-      this.queryInfo.GroupName = 'All'
-      this.queryInfo.InstanceName = ''
-      this.queryInfo.InstanceType = 'All'
+      this.inventoryQueryInfo.GroupName = 'All'
+      this.inventoryQueryInfo.InstanceName = ''
+      this.inventoryQueryInfo.InstanceType = 'All'
       this.getInventorylist()
+    },
+    handleDrawerClose () {
+      this.tableQueryInfo.InstanceName = ''
+      this.tableQueryInfo.PageNum = 1
+      this.tableQueryInfo.PageSize = 10
+      this.table = false
+    },
+    handleInnerDrawerClose () {
+      this.columnQueryInfo.TableName = ''
+      this.columnQueryInfo.PageNum = 1
+      this.columnQueryInfo.PageSize = 10
+      this.column = false
     }
   },
   name: 'DataInventory'

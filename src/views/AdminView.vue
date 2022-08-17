@@ -19,9 +19,9 @@
 </template>
 
 <script>
-import CommonHeader from '@/components/dataSecurity/Common/Header'
-import CommonAside from '@/components/dataSecurity/Common/Aside'
-import CommonFooter from '@/components/dataSecurity/Common/Footer'
+import CommonHeader from '@/components/Common/Header'
+import CommonAside from '@/components/Common/Aside'
+import CommonFooter from '@/components/Common/Footer'
 export default {
   name: 'AdminView',
   components: { CommonHeader, CommonAside, CommonFooter },
