@@ -2,10 +2,10 @@
   <div>
     <!-- 面包屑导航 -->
     <el-breadcrumb separator-class="el-icon-arrow-right">
-      <el-breadcrumb-item :to="{ path: '/welcome' }">首页</el-breadcrumb-item>
-      <el-breadcrumb-item>数据安全</el-breadcrumb-item>
-      <el-breadcrumb-item>存储阶段</el-breadcrumb-item>
-      <el-breadcrumb-item>数据清单</el-breadcrumb-item>
+      <el-breadcrumb-item :to="{ path: '/welcome' }">Home</el-breadcrumb-item>
+      <el-breadcrumb-item>Data Security</el-breadcrumb-item>
+      <el-breadcrumb-item>Identification</el-breadcrumb-item>
+      <el-breadcrumb-item>Data Field</el-breadcrumb-item>
     </el-breadcrumb>
     <!-- 卡片区 -->
     <el-card>
@@ -15,42 +15,51 @@
         <el-tab-pane label="APP" name="APP"></el-tab-pane>
         <el-tab-pane label="DAP" name="DAP"></el-tab-pane>
         <el-tab-pane label="FMC" name="FMC"></el-tab-pane>
+        <el-tab-pane label="O2O" name="O2O"></el-tab-pane>
+        <el-tab-pane label="AID" name="AID"></el-tab-pane>
+        <el-tab-pane label="CSC" name="CSC"></el-tab-pane>
+        <el-tab-pane label="Promotion" name="Promotion"></el-tab-pane>
         <el-tab-pane label="ISDP" name="ISDP"></el-tab-pane>
       </el-tabs>
       <!-- 搜索区域 -->
       <el-row :gutter="15">
         <el-col :span="4">
-          <el-select v-model="queryInfo.RiskLevelName" clearable placeholder="筛选敏感数据等级" @change="handleClick">
+          <el-select v-model="queryInfo.SensLevelName" clearable placeholder="筛选敏感数据等级" @change="handleClick">
             <el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value"/>
           </el-select>
         </el-col>
         <el-col :span="8">
-          <el-input placeholder="请输入想查询的规则名" v-model="queryInfo.RuleName" clearable @clear="getColumnlist" @keyup.enter.native="getColumnlist" />
+          <el-input placeholder="Input query classification name" v-model="queryInfo.RuleName" clearable @clear="getColumnlist" @keyup.enter.native="getColumnlist" />
         </el-col>
-        <el-col :span="4">
-          <el-button @click="getColumnlist" type="primary">搜 索</el-button>
-          <el-button @click="clearAll">重 置</el-button>
+        <el-col :span="8">
+          <el-button @click="getColumnlist" type="primary">Search</el-button>
+          <el-button @click="clearAll">Reset</el-button>
         </el-col>
       </el-row>
       <!-- 数据返回区域 -->
       <el-table :data="columnlist" stripe style="width: 100%">
-        <el-table-column label="项目组" prop="GroupName" width="100px" sortable/>
-        <el-table-column label="实例名" prop="InstanceName" sortable/>
-        <el-table-column label="字段名称" prop="Name" sortable/>
-        <el-table-column label="数据类型" prop="DataType" sortable/>
-        <el-table-column label="命中规则" prop="RuleName" sortable/>
-        <el-table-column label="数据等级" sortable>
+        <el-table-column label="Group" prop="GroupName" width="100px" sortable/>
+        <el-table-column label="Instance ID" prop="InstanceId" sortable/>
+        <el-table-column label="Database" prop="DatabaseName" sortable/>
+        <el-table-column label="Table" prop="TableName" sortable/>
+        <el-table-column label="Column" prop="ColumnName" sortable/>
+        <el-table-column label="Data Type" prop="DataType" sortable/>
+        <el-table-column label="Classification" prop="RuleName" sortable/>
+        <el-table-column label="Severity" sortable>
           <template slot-scope="scope">
-            <el-tag v-if="scope.row.RiskLevelName === 'S4'" type="danger">S4</el-tag>
-            <el-tag v-else-if="scope.row.RiskLevelName === 'S3'" type="warning">S3</el-tag>
-            <el-tag v-else-if="scope.row.RiskLevelName === 'S2'">S2</el-tag>
-            <el-tag v-else-if="scope.row.RiskLevelName === 'S1'" type="success">S1</el-tag>
+            <el-tag v-if="scope.row.SensLevelName === 'S4'" type="danger">S4</el-tag>
+            <el-tag v-else-if="scope.row.SensLevelName === 'S3'" type="warning">S3</el-tag>
+            <el-tag v-else-if="scope.row.SensLevelName === 'S2'">S2</el-tag>
+            <el-tag v-else-if="scope.row.SensLevelName === 'S1'" type="success">S1</el-tag>
             <el-tag v-else type="info">N/A</el-tag>
           </template>
         </el-table-column>
-        <el-table-column label="数据表名" sortable>
-          <template slot-scope="scope">
-            <el-link type="primary" icon="el-icon-view">{{ scope.row.TableName }}</el-link>
+        <el-table-column label="Methods">
+          <template slot-scope="scope2">
+            <el-popover placement="left" title="Sample Data" trigger="click">
+              <p>{{ scope2.row.SampleData }}</p>
+              <el-button slot="reference" icon="el-icon-search" circle></el-button>
+            </el-popover>
           </template>
         </el-table-column>
       </el-table>
@@ -59,7 +68,7 @@
         @size-change="handleSizeChange"
         @current-change="handleCurrentChange"
         :current-page="queryInfo.PageNum"
-        :page-sizes="[5, 10, 20, 50]"
+        :page-sizes="[10, 20, 50, 100]"
         :page-size="queryInfo.PageSize"
         layout="total, sizes, prev, pager, next, jumper"
         :total=total>
@@ -77,31 +86,25 @@ export default {
       // 获取数据资产列表
       queryInfo: {
         GroupName: 'All',
-        RiskLevelName: '',
+        SensLevelName: '',
         RuleName: '',
         PageNum: 1,
-        PageSize: 10
+        PageSize: 20
       },
       // 返回资产数据
       columnInfo: {
         UUID: '',
         GroupName: '',
-        CreationTime: '',
         DataType: '',
-        Id: 0,
         InstanceId: '',
-        InstanceName: '',
-        Name: '',
-        ProductCode: '',
-        RevisionId: 0,
-        RevisionStatus: 0,
-        RiskLevelId: 0,
-        RiskLevelName: '',
+        DatabaseName: '',
+        TableName: '',
+        ColumnName: '',
+        RuleId: null,
         RuleName: '',
         SensLevelName: '',
         Sensitive: '',
-        TableId: '',
-        TableName: '',
+        SampleData: '',
         TotalCount: 0
       },
       options: [
@@ -120,7 +123,7 @@ export default {
   },
   methods: {
     async getColumnlist () {
-      const { data: res } = await this.$http.post('column', this.queryInfo,
+      const { data: res } = await this.$http.post('DataFields', this.queryInfo,
         { headers: { 'Content-Type': 'application/json' } })
       if (res.Code !== 200) return this.$message.error('获取资产列表失败')
       this.columnlist = res.Res_Data

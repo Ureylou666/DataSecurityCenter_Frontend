@@ -1,6 +1,6 @@
 <template>
   <div class="footer">
-    <span> ----- Compliance Center -----</span>
+    <span> ----- Data Security Center -----</span>
   </div>
 </template>
 

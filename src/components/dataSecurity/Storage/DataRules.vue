@@ -2,10 +2,10 @@
   <div>
     <!-- 面包屑导航 -->
     <el-breadcrumb separator-class="el-icon-arrow-right">
-      <el-breadcrumb-item :to="{ path: '/welcome' }">首页</el-breadcrumb-item>
-      <el-breadcrumb-item>数据安全</el-breadcrumb-item>
-      <el-breadcrumb-item>存储阶段</el-breadcrumb-item>
-      <el-breadcrumb-item>分级规则</el-breadcrumb-item>
+      <el-breadcrumb-item :to="{ path: '/welcome' }">Home Page</el-breadcrumb-item>
+      <el-breadcrumb-item>Data Security</el-breadcrumb-item>
+      <el-breadcrumb-item>Identification</el-breadcrumb-item>
+      <el-breadcrumb-item>Classification</el-breadcrumb-item>
     </el-breadcrumb>
     <!-- 卡片区 -->
     <el-card>

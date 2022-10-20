@@ -1,10 +1,10 @@
 <template>
   <div class="header">
     <div class="header-left">
-      <span>Platform</span>
+      <span>CN Digital Security</span>
     </div>
     <div class="header-right">
-      <el-button type="danger" @click='LogOut' class="button">退出</el-button>
+      <el-button type="danger" class="button" size="small">Logout</el-button>
     </div>
   </div>
 </template>
@@ -30,7 +30,7 @@ export default {
   justify-content: space-between;
 }
 .header-left {
-  width: 15%;
+  width: 20%;
   height: 100%;
   display: flex;
   align-items: center;

@@ -3,8 +3,11 @@ import App from './App.vue'
 import router from './router'
 import axios from 'axios'
 import './plugin/element-ui'
+import ElementUI from 'element-ui'
 import './assets/css/global.css'
+import locale from '../../node_modules/element-ui/lib/locale/lang/en'
 
+Vue.use(ElementUI, { locale })
 router.beforeEach((to, from, next) => {
   /* 路由发生变化时 修改页面title */
   if (to.meta.title) {
