@@ -201,7 +201,7 @@ export default {
         DatabaseName: '',
         TableName: '',
         PageNum: 1,
-        PageSize: 5
+        PageSize: 10
       },
       cloudAccountList: [],
       cloudAccountID: '',
@@ -258,7 +258,7 @@ export default {
         InstanceName: InstanceID,
         DatabaseName: DatabaseName,
         TableName: TableName,
-        PageSize: 5,
+        PageSize: 10,
         PageNum: 1
       }
     },
