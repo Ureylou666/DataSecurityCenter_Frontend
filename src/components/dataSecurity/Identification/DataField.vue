@@ -2,7 +2,7 @@
   <div>
     <!-- 面包屑导航 -->
     <el-breadcrumb separator-class="el-icon-arrow-right">
-      <el-breadcrumb-item :to="{ path: '/welcome' }">Home</el-breadcrumb-item>
+      <el-breadcrumb-item :to="{ path: '/admin' }">Home</el-breadcrumb-item>
       <el-breadcrumb-item>Data Security</el-breadcrumb-item>
       <el-breadcrumb-item>Identification</el-breadcrumb-item>
       <el-breadcrumb-item>Data Field</el-breadcrumb-item>
@@ -23,13 +23,18 @@
       </el-tabs>
       <!-- 搜索区域 -->
       <el-row :gutter="15">
-        <el-col :span="4">
-          <el-select v-model="queryInfo.SensLevelName" clearable placeholder="筛选敏感数据等级" @change="handleClick">
+        <el-col :span="2">
+          <el-select v-model="queryInfo.SensLevelName" clearable placeholder="Filter" @change="handleClick">
             <el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value"/>
           </el-select>
         </el-col>
+        <el-col :span="2">
+          <el-select v-model="queryInfo.CategoryName" clearable placeholder="Filter" @change="handleClick">
+            <el-option v-for="item in Category" :key="item.value" :label="item.label" :value="item.value"/>
+          </el-select>
+        </el-col>
         <el-col :span="8">
-          <el-input placeholder="Input query classification name" v-model="queryInfo.RuleName" clearable @clear="getColumnlist" @keyup.enter.native="getColumnlist" />
+          <el-input placeholder="Input query rule name" v-model="queryInfo.RuleName" clearable @clear="getColumnlist" @keyup.enter.native="getColumnlist" />
         </el-col>
         <el-col :span="8">
           <el-button @click="getColumnlist" type="primary">Search</el-button>
@@ -44,7 +49,8 @@
         <el-table-column label="Table" prop="TableName" sortable/>
         <el-table-column label="Column" prop="ColumnName" sortable/>
         <el-table-column label="Data Type" prop="DataType" sortable/>
-        <el-table-column label="Classification" prop="RuleName" sortable/>
+        <el-table-column label="Category" prop="CategoryName" sortable/>
+        <el-table-column label="Rule Name" prop="RuleName" sortable/>
         <el-table-column label="Severity" sortable>
           <template slot-scope="scope">
             <el-tag v-if="scope.row.SensLevelName === 'S4'" type="danger">S4</el-tag>
@@ -107,6 +113,12 @@ export default {
         SampleData: '',
         TotalCount: 0
       },
+      Category: [
+        { value: 'StrictlyConfidential', label: 'StrictlyConfidential' },
+        { value: 'Confidential', label: 'Confidential' },
+        { value: 'Internal', label: 'Internal' },
+        { value: 'Public', label: 'Public' }
+      ],
       options: [
         { value: '', label: 'All' },
         { value: 'S4', label: 'S4' },
